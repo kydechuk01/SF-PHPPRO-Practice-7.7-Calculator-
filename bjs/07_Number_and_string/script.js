@@ -1,20 +1,23 @@
+// git: https://kydechuk01.github.io/SF-PHPPRO-Practice-7.7-Calculator-/bjs/07_Number_and_string/index.html
+
 ` посмотреть
  https://codequest.ru/articles/kalkulyator-na-chistom-javascript
  https://bootsnipp.com/snippets/ZlyvE
  https://mdbootstrap.com/docs/standard/extended/calculator/
 
 Цель: Разработать калькулятор без использования eval.
+
 Поставленные задачи:
  - позволить интуитивно просто вводить как положительные, так и отрицательные операнды
  - вычисление дробных числех в обоих знаках
  - ввод точки на пустом операнде дополняет ведущим "0"
  - акцент на предотвращении ошибочного ввода (повтор знаков или запятых)
  - позволить выполнять вычисления типа: -0.05-(0.05), или 5*(-1.005) [скобки только для примера]
-   
 
  пока не решено:
-  - проблема с точностью вычислений в js ( типа 0.2 * 0.1 = 0.30000000000000004)
-  
+ - отказаться от бутстрапа в пользу собственных стилей
+ - проблема с точностью вычислений в js ( типа 0.2 * 0.1 = 0.30000000000000004)
+
 `
 // Инициализация переменных и констант
 
@@ -119,16 +122,22 @@ function calculate() {
         break;
 
       case '/': // Деление 
-        if (Number(secondOperand) !== 0) { // проверяем деление на 0
+        if (Number(secondOperand) !== 0) {
+	  // проверяем деление на 0
           result = Number(firstOperand) / Number(secondOperand);
-        } else { result = 'Ошибка: Деление на ноль!' };
+         } else {
+	     result = 'Ошибка: Деление на ноль!' 
+	     wasError = true; // установим флаг ошибки
+	    };
         firstOperand = result;
+	// после деления надо очистить
+	// второй операнд, операцию, запятую и этап
         secondOperand = '';
         comma2 = false;
         step4 = false; // отменяем ввод операнда-2
         operation = '';
         success = true;
-        wasError = true; // установим флаг ошибки
+        
         renderCalcContent();
         break;
     }
@@ -194,7 +203,7 @@ function processInput(newSymbol) {
         break;
 
       case ".":
-        if (wasError) {break}; // блокируем кнопку, пока не сброшена ошибка
+        if (wasError) { break }; // блокируем кнопку, пока не сброшена ошибка
         // сбросим калькулятор, если точка введена после =
         if (success) { resetCalc() };
 
@@ -224,10 +233,12 @@ function processInput(newSymbol) {
 
       case "-":
         if (wasError) { break }; // блокируем кнопку, пока не сброшена ошибка
+
         // логика блока позволяет ввести выражение типа: -NUM1--NUM2= с корректным
         // разнесением знака "-" в каждую составляющую математического выражения
+
         // если мы в операнде 1 уже имеем результат предыдущего вычисления (success == true),
-        // то "-" это уже ввод операции, тогда переопределяем этапы и сбрасываем success:
+        // то "-" это уже ввод новой операции, тогда переопределяем этапы и сбрасываем success:
         if (success) {
           operation = '-';
           resetSteps(); step2 = true; step3 = true;
@@ -266,7 +277,7 @@ function processInput(newSymbol) {
         break;
 
       case "/":
-        // операнд-1 уже есть, и он содержит хотя бы одну цифру
+        // операнд-1 уже есть, и он содержит хотя бы одну цифру?
         if ((success || step1) && (/\d/.test(firstOperand))) {
           operation = '/';
           resetSteps(); step2 = true; step3 = true;
@@ -276,7 +287,7 @@ function processInput(newSymbol) {
         break;
 
       case "*":
-        // операнд-1 уже есть, и он содержит хотя бы одну цифру
+        // операнд-1 уже есть, и он содержит хотя бы одну цифру?
         if ((success || step1) && (/\d/.test(firstOperand))) {
           operation = '*';
           resetSteps(); step2 = true; step3 = true;
@@ -290,8 +301,9 @@ function processInput(newSymbol) {
         break;
 
       default:
-        // ввод новой цифры после знака равно сбрасывает кальулятор в 0
+        // ввод новой цифры после знака = сбрасывает кальулятор в 0
         if (success) { resetCalc() };
+        // принимаем цифры на вход
         if (step0) { firstOperand = newSymbol; resetSteps(); step1 = true }
         else if (step1) { firstOperand += newSymbol }
         else if (step3) { secondOperand = newSymbol; resetSteps(); step4 = true }
