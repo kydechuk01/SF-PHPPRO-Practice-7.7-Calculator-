@@ -1,257 +1,327 @@
-// посмотреть
-// https://bootsnipp.com/snippets/ZlyvE
-// https://mdbootstrap.com/docs/standard/extended/calculator/
+` посмотреть
+ https://codequest.ru/articles/kalkulyator-na-chistom-javascript
+ https://bootsnipp.com/snippets/ZlyvE
+ https://mdbootstrap.com/docs/standard/extended/calculator/
 
-// пока не решено:
-// - проблема с точностью некоторых вычислений в js ( типа 0.2 * 0.1 = )
-// - множественный ввод точки
+Цель: Разработать калькулятор без использования eval.
+Поставленные задачи:
+ - позволить интуитивно просто вводить как положительные, так и отрицательные операнды
+ - вычисление дробных числех в обоих знаках
+ - ввод точки на пустом операнде дополняет ведущим "0"
+ - акцент на предотвращении ошибочного ввода (повтор знаков или запятых)
+ - позволить выполнять вычисления типа: -0.05-(0.05), или 5*(-1.005) [скобки только для примера]
+   
 
+ пока не решено:
+  - проблема с точностью вычислений в js ( типа 0.2 * 0.1 = 0.30000000000000004)
+  
+`
+// Инициализация переменных и констант
 
-let firstOperand = '';
+// задаем начальные значения первого операнда
+let firstOperand = '0';
 let secondOperand = '';
 let operation = '';
 let result = '';
 let success = false; // признак успешно завершенной калькуляции
-let comma1 = false; // признак наличия дробной части первого операнда
-let comma2 = false; // признак наличия дробной части первого операнда
-let negSecondOperand = false;
+let comma1 = false; // признак наличия дробной части в операнде-1
+let comma2 = false; // признак наличия дробной части в операнде-2
+let wasError = false; // флаг ошибки
 
-const allowedKeys = ['ArrowLeft', 'ArrowRight', 'Delete', 'Backspace', 'Shift', 'End', 'Home'];
-const allowedChars = /^[0-9\.]+$/;
+// этапы ввода данных
+let step0 = true; // ожидаем минус как знака отрицательного операнда-1
+let step1 = false; // идет ввод тела операнда-1
+let step2 = false; // у нас есть операция
+let step3 = false; // ожидаем минус как знак отрицательного операнда-2
+let step4 = false; // идет ввод тела операнда-2
 
-const inputWindow = document.getElementById('inputWindow');
-inputWindow.value = '0';
+const operationsList = ['+', '-', '/', '*', '=', 'AC', 'CE', '+-', '⌫'];
+const allowedDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'];
+// const allowedChars = /^[0-9\-\.]+$/;
 
-function calculate () {
-  if (firstOperand && secondOperand && operation) {
+const inputWindow = document.querySelector('#calc #inputWindow');
+const calcButtons = document.querySelectorAll('#calc .btn');
+
+// логирование этапов ввода данных в консоль
+function consoleSteps() {
+  console.log(`s0:${step0}, s1:${step1}, s2:${step2}, s3:${step3}, s4:${step4}, comma1:${comma1}, comma2:${comma2}`)
+};
+
+
+function resetSteps() {
+  step0 = false;
+  step1 = false;
+  step2 = false;
+  step3 = false;
+  step4 = false;
+}
+
+// сбрасываем калькулятор
+function resetCalc() {
+  firstOperand = '0'; // задаем начальное значение первого операнда
+  secondOperand = '';
+  operation = '';
+  result = '';
+  step0 = true;
+  step1 = false;
+  step2 = false;
+  step3 = false;
+  step4 = false;
+  comma1 = false; // признак наличия дробной части первого операнда
+  comma2 = false; // признак наличия дробной части первого операнда
+  success = false; // признак успешно завершенной калькуляции
+  wasError = false; // сбрасываем флаг ошибки
+  renderCalcContent();
+};
+
+// обновить окно калькулятора
+function renderCalcContent() {
+  inputWindow.value = firstOperand + operation + secondOperand;
+}
+
+// Вычисление результата
+function calculate() {
+  // consoleSteps();
+  console.log(`firstOperand=${firstOperand}, sign:${operation}, secondOperand=${secondOperand}`);
+  // проверим через регэксп, есть ли в операндах хотя бы одна цифра
+  if (/\d/.test(firstOperand) && /\d/.test(secondOperand) && operation) {
     switch (operation) {
-      case '+': // складываем +
+      case '+': // Сложение 
         result = Number(firstOperand) + Number(secondOperand);
-        inputWindow.value = result;
         firstOperand = result;
         secondOperand = '';
+        comma2 = false;
         operation = '';
         success = true;
+        step4 = false;
+        renderCalcContent();
         break;
-      case '-': // вычитаем -
+      case '-': // Вычитание 
         result = Number(firstOperand) - Number(secondOperand);
-        inputWindow.value = result;
         firstOperand = result;
         secondOperand = '';
+        comma2 = false;
         operation = '';
         success = true;
-        break;
-        
-      case '*': // умножаем *
-        result = Number(firstOperand) * Number(secondOperand);
-        inputWindow.value = result;
-        firstOperand = result;
-        secondOperand = '';
-        operation = '';
-        success = true;
-        break;
-      
-      case '/': // делим /
-        result = Number(firstOperand) / Number(secondOperand);
-        inputWindow.value = result;
-        firstOperand = result;
-        secondOperand = '';
-        operation = '';
-        success = true;
+        step4 = false;
+        renderCalcContent();
         break;
 
-      case 'Neg': // инвертируем
+      case '*': // Умножение
+        result = Number(firstOperand) * Number(secondOperand);
+        firstOperand = result;
+        secondOperand = '';
+        comma2 = false;
+        operation = '';
+        success = true;
+        step4 = false;
+        renderCalcContent();
+        break;
+
+      case '/': // Деление 
+        if (Number(secondOperand) !== 0) { // проверяем деление на 0
+          result = Number(firstOperand) / Number(secondOperand);
+        } else { result = 'Ошибка: Деление на ноль!' };
+        firstOperand = result;
+        secondOperand = '';
+        comma2 = false;
+        step4 = false; // отменяем ввод операнда-2
+        operation = '';
+        success = true;
+        wasError = true; // установим флаг ошибки
+        renderCalcContent();
         break;
     }
 
   }
 };
 
-// функция очистки поля ввода, если пользователь начал вводить новые цифры или нажимать кнопки после того, как нажал = 
-function checkSuccess () {
-  if (success || inputWindow.value == '0') {
-      firstOperand = ''; // очищаем операнды и операцию
-      secondOperand = '';
-      operation = '';
-      result = ''; // обнуляем результат
-      inputWindow.value = ''; // очищаем поле ввода
-      comma1 = false; // признак наличия дробной части первого операнда
-      comma2 = false; // признак наличия дробной части первого операнда
-      success = false; // начинаем ввод с чистого листа    
-      negSecondOperand = false;  
+// функция посимвольного заполнения операндов и знака операции
+function processInput(newSymbol) {
+
+  console.log('Input', newSymbol);
+
+  // обрабатываем ввод только для разрешенных символов
+  if (allowedDigits.includes(newSymbol)
+    || operationsList.includes(newSymbol)) {
+
+    switch (newSymbol) {
+
+      case '+-': // инвертируем результат операции или первый операнд
+        consoleSteps();
+        if (success || step0 || step1) {
+          if (/\d/.test(firstOperand)) { firstOperand = -firstOperand; resetSteps; step1 = true }
+          else if (firstOperand == '-') { firstOperand = ''; resetSteps; step0 = true }
+          else if (firstOperand == '' || firstOperand === '0') { firstOperand = '-'; resetSteps; step1 = true };
+          success = false;
+        };
+        renderCalcContent;
+        break;
+
+      case "AC":
+        // сбрасываем состояние калькулятора
+        resetCalc();
+        break;
+
+      case "CE":
+        if (wasError) { break }; // блокируем кнопку, пока не сброшена ошибка
+        // очищаем операнд-2 или операцию, но не трогаем операнд-1
+        if (step4) { secondOperand = ''; comma2 = false; step3 = true; step4 = false }
+        else if (step2 || step3) { operation = ''; step1 = true; step2 = false; step3 = false };
+        renderCalcContent;
+        break;
+
+      case "⌫":
+        // очищаем последний символ или операцию
+        consoleSteps();
+        if (wasError) { break }; // блокируем кнопку, пока не сброшена ошибка
+        if (step4 && secondOperand) {
+          secondOperand = secondOperand.toString();
+          secondOperand = secondOperand.slice(0, -1);
+          if (!secondOperand.includes('.')) { comma2 = false }
+          if (secondOperand.length == 0) { step3 = true; step4 = false }
+        }
+        else if (step2 || step3) {
+          operation = ''; resetSteps(); step1 = true;
+        }
+        else if (step0 || success || step1 && firstOperand) {
+          firstOperand = firstOperand.toString();
+          firstOperand = firstOperand.slice(0, -1);
+          if (!firstOperand.includes('.')) { comma1 = false };
+          if (firstOperand.length == 0) { resetSteps; step0 = true }
+        }
+        renderCalcContent;
+        break;
+
+      case ".":
+        if (wasError) {break}; // блокируем кнопку, пока не сброшена ошибка
+        // сбросим калькулятор, если точка введена после =
+        if (success) { resetCalc() };
+
+        // точка в начале строки добавит ведущий "0" к первому операнду
+        if (step0) { firstOperand = '0.'; comma1 = true; resetSteps(); step1 = true; }
+
+        // если идет ввод операнда-1 и еще не было точки, то добавим точку
+        else if (step1 && !comma1) {
+          // на этапе-1 операнд "-" превращаем в "-0."
+          if (firstOperand == '-') { firstOperand = '-0.' }
+          // иначе просто добавляем точку
+          else { firstOperand += '.' }
+          comma1 = true; // только 1 точка в операнде-1
+        }
+        // после ввода операции если пользователь сразу нажал точку, то добавим ведущий "0"
+        else if (step3) { secondOperand = '0.'; comma2 = true; resetSteps(); step4 = true }
+        else if (step4 && !comma2) {
+          // на этапе-4 операнд "-" превращаем в "-0."
+          if (secondOperand === '-') { secondOperand = '-0.' }
+          // в любом другом случае просто добавим точку
+          else { secondOperand += '.' };
+          comma2 = true; // только 1 точка в операнде-2
+        };
+        consoleSteps;
+        renderCalcContent;
+        break;
+
+      case "-":
+        if (wasError) { break }; // блокируем кнопку, пока не сброшена ошибка
+        // логика блока позволяет ввести выражение типа: -NUM1--NUM2= с корректным
+        // разнесением знака "-" в каждую составляющую математического выражения
+        // если мы в операнде 1 уже имеем результат предыдущего вычисления (success == true),
+        // то "-" это уже ввод операции, тогда переопределяем этапы и сбрасываем success:
+        if (success) {
+          operation = '-';
+          resetSteps(); step2 = true; step3 = true;
+          success = false;
+        }
+        // иначе базовый сценарий: в начале строки ожидаем минус как начало отрицательного
+        // операнда-1 (step0) и далее переходим ко вводу тела операнда-1(step1)
+        else if (step0) { firstOperand = '-'; resetSteps(); step1 = true }
+
+        // если мы вводили первый операнд и в нем есть хоть одна цифра,
+        // то "-" устанавливает знак операции, а мы переходим ко ожиданию ввода
+        // знака минус для второго операнда (step3)
+        else if (step1 && /\d/.test(firstOperand)) { operation = '-'; step1 = false; step2 = true; step3 = true }
+
+        // на этапе step3 "-" означает ввод отрицательного знака для операнда-2
+        // после переходим к step4 для ввода цифр тела операнда-2
+        else if (step3) { secondOperand = '-'; resetSteps(); step4 = true }
+
+        renderCalcContent(); // отрисовываем калькулятор
+        break;
+
+      case "+":
+        if (wasError) { break }; // блокируем кнопку, пока не сброшена ошибка
+        if (success) {
+          // операнд-1 уже есть
+          operation = '+';
+          resetSteps(); step2 = true; step3 = true;
+          success = false;
+        }
+        else if (step1 && /\d/.test(firstOperand)) { // в первом операнде есть хотя бы одна цифра
+          operation = '+';
+          resetSteps(); step2 = true; step3 = true;
+        };
+
+        renderCalcContent(); // отрисовываем калькулятор
+        break;
+
+      case "/":
+        // операнд-1 уже есть, и он содержит хотя бы одну цифру
+        if ((success || step1) && (/\d/.test(firstOperand))) {
+          operation = '/';
+          resetSteps(); step2 = true; step3 = true;
+          success = false;
+          renderCalcContent(); // отрисовываем калькулятор
+        }
+        break;
+
+      case "*":
+        // операнд-1 уже есть, и он содержит хотя бы одну цифру
+        if ((success || step1) && (/\d/.test(firstOperand))) {
+          operation = '*';
+          resetSteps(); step2 = true; step3 = true;
+          success = false;
+          renderCalcContent(); // отрисовываем калькулятор
+        }
+        break;
+
+      case "=":
+        calculate();
+        break;
+
+      default:
+        // ввод новой цифры после знака равно сбрасывает кальулятор в 0
+        if (success) { resetCalc() };
+        if (step0) { firstOperand = newSymbol; resetSteps(); step1 = true }
+        else if (step1) { firstOperand += newSymbol }
+        else if (step3) { secondOperand = newSymbol; resetSteps(); step4 = true }
+        else if (step4) { secondOperand += newSymbol };
+        renderCalcContent();
+        break;
     }
+  }
 }
 
-// блокируем вставку через буфер обмена любых запрещенных символов 
-// разрешается вставить только числовое значение
-inputWindow.addEventListener('paste', function(event) {
-    checkSuccess(); // очистить экран ввода, если вставка делается после =
-    var pastedData = event.clipboardData.getData('text/plain');
-    // Регулярное выражение для проверки на цифры и точку
-    if (!allowedChars.test(pastedData)) {
-      event.preventDefault();
-    }
+// НАЧАЛО КОДА
+
+// блокируем вставку через буфер обмена в окно калькулятора
+inputWindow.addEventListener('paste', function (event) {
+  event.preventDefault();
+})
+
+// блокируем текстовый ввод в окно калькулятора
+inputWindow.addEventListener('keydown', function (event) {
+  event.preventDefault();
+})
+
+// сброс состояния калькулятора
+resetCalc();
+
+// Назначаем слушателей на кнопки калькулятора, объекты с классом .btn
+calcButtons.forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    processInput(this.innerText);
+    renderCalcContent();
   });
-
-// обеспечиваем текстовый ввод в окно калькулятора
-inputWindow.addEventListener ('keydown', function(event) {
-    checkSuccess(); // очистить экран ввода, если вставка делается после =
-    var pressedKey = event.key; // console.log(event.keyCode);
-    if (!allowedChars.test(pressedKey) && !allowedKeys.includes(pressedKey))  {
-        event.preventDefault();
-      }    
 })
 
-document.getElementById('btn_clr').addEventListener('click', function () {
-    firstOperand = '';
-    secondOperand = '';
-    operation = '';
-    result = '';
-    inputWindow.value = '0'; // помещаем 0 в поле ввода
-})
-
-// Обработка нажатия кнопки Равно/Result [=]
-
-document.getElementById('btn_result').addEventListener('click', function () {
-  if (inputWindow.value && firstOperand && operation) {
-            inputStr = inputWindow.value;
-            secondOperand = inputStr.slice(inputStr.lastIndexOf(operation)+1);
-            calculate();
-          };
-});
-
-// обработчик кнопки [+]
-
-document.getElementById('btn_plus').addEventListener('click', function () {
-  // console.log(`Input: ${inputWindow.value}\nFirst: ${firstOperand}\nSecond: ${secondOperand}\nOperation: ${operation}`);
-  // допускаем ввод оператора + только если уже есть первый операнд
-  // запрещаеем дублирование ввода текущего оператора +
-  // упрощаем конструкцию ввода, исключая множественное сложение
-
-  if (operation) {return};
-
-  if (inputWindow.value && inputWindow.value !== '-'
-        && !secondOperand && (operation !== '+')) {
-            firstOperand = inputWindow.value; // забираем строку из инпута в первый операнд
-            inputWindow.value += '+';
-            operation = '+';
-            secondOperand = null; // обнуляем второй операнд            
-          };
-});
-
-// обработчик кнопки [-]
-document.getElementById('btn_minus').addEventListener('click', function () {
-  checkSuccess(); // очистить экран ввода, если вставка делается после =
-
-  if (firstOperand && operation && !negSecondOperand) {
-    // не меняем тип операции, чтобы позволить ввод отрицательного второго операнда
-    inputWindow.value += '-';
-    negSecondOperand = true; // второй операнд отрицательный
-    return;
-  };
-
-  if (inputWindow.value == '' || inputWindow.value == '0') {
-    inputWindow.value = '-'; // позволяем ввести первое число со знаком минус
-    return;
-  };
-
-  if (inputWindow.value != '-' && inputWindow.value && !operation) {
-            firstOperand = inputWindow.value; // забираем строку из инпута в первый операнд
-            inputWindow.value += '-';
-            operation = '-';
-            negSecondOperand = true; //  второй операнд отрицательный
-          };
-});
-
-
-document.getElementById('btn_multiply').addEventListener('click', function () {
-  // допускаем ввод оператора и создание операнда-1, только если их еще не было
-  // запрещаем ввод нового оператора
-  if (inputWindow.value && !firstOperand && !operation) {
-            firstOperand = inputWindow.value; // забираем строку из инпута в первый операнд
-            inputWindow.value += '*';
-            operation = '*';            
-          };
-});
-
-// Обработчик ввода десятичной точки [.]
-//  0.ХХХХ[operation]0.XXX
-// -0.YYY[*]-0.YYYY  или -Y.YYY[*]Y.YYYY
-
-document.getElementById('btn_point').addEventListener('click', function () {
-  checkSuccess(); // очистить экран ввода, если ввод делается после =
-  console.log ('Current input:',inputWindow.value, '; firstOperand = ',firstOperand, '; operation = ',operation);
-  if (inputWindow.value == '0' || inputWindow.value == '') {
-    inputWindow.value = '0.';
-    comma1 = true;
-    return;
-  };
-  if (inputWindow.value == '-' || inputWindow.value == '-0') {
-    inputWindow.value = '-0.';
-    comma1 = true;
-    return;};
-  if (inputWindow.value && !comma1) {
-    inputWindow.value += '.';
-    comma1 = true;
-    console.log('we are here!');
-    return;
-  };
-
-  if (firstOperand && operation && !comma2) {
-    inputWindow.value += '.';
-    comma2 = true;
-    return;
-  }
-  // дополняем точку нулем, если новое выражение начато с точки
-  // inputWindow.value += (inputWindow.value == '0') ? '.': '0.'; 
-})
-
-document.getElementById('btn_0').addEventListener('click', function () {
-  checkSuccess(); // очистить экран ввода, если ввод делается после =
-  inputWindow.value += '0';
-})
-
-document.getElementById('btn_1').addEventListener('click', function () {
-  checkSuccess(); // очистить экран ввода, если ввод делается после =
-  inputWindow.value += '1';
-})
-
-document.getElementById('btn_2').addEventListener('click', function () {
-  checkSuccess(); // очистить экран ввода, если ввод делается после =
-  inputWindow.value += '2';
-})
-
-document.getElementById('btn_3').addEventListener('click', function () {
-  checkSuccess(); // очистить экран ввода, если ввод делается после =
-  inputWindow.value += '3';
-})
-
-document.getElementById('btn_4').addEventListener('click', function () {
-  checkSuccess(); // очистить экран ввода, если ввод делается после =
-  inputWindow.value += '4';
-})
-
-document.getElementById('btn_5').addEventListener('click', function () {
-  checkSuccess(); // очистить экран ввода, если ввод делается после =
-  inputWindow.value += '5';
-})
-
-document.getElementById('btn_6').addEventListener('click', function () {
-  checkSuccess(); // очистить экран ввода, если ввод делается после =
-  inputWindow.value += '6';
-})
-
-document.getElementById('btn_7').addEventListener('click', function () {
-  checkSuccess(); // очистить экран ввода, если ввод делается после =
-  inputWindow.value += '7';
-})
-
-document.getElementById('btn_8').addEventListener('click', function () {
-  checkSuccess(); // очистить экран ввода, если ввод делается после =
-  inputWindow.value += '8';
-})
-
-document.getElementById('btn_9').addEventListener('click', function () {
-  checkSuccess(); // очистить экран ввода, если ввод делается после =
-  inputWindow.value += '9';
-})
