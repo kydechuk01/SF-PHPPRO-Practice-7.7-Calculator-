@@ -1,4 +1,63 @@
+#about {
+    font-size: 0.7rem;
+    color:gray;
+    width: auto;
+    min-width: 30rem;
+}
+
+
 .game-card {
-    height: 100vh;
+    height: auto;
+    margin: 2rem;
     font-family: 'Open Sans', monospace;
+}
+
+#rangeMaxField, #rangeMinField {
+    color: blue;
+}
+
+.card {
+    width: auto;
+    !min-height: 25rem;
+    min-width: 23rem;
+}
+
+.commentLabel {
+    font-size: 0.6rem;
+    color: gray;
+    margin: 1rem 0 0;
+    padding: 0rem;
+}
+
+#settings {
+    display: block;
+}
+
+.foundAnswer {
+    visibility: show;
+    color: green;
+}
+
+.resultNum {
+    color: red;
+}
+
+#minValueInput,#maxValueInput {
+    margin: 0.5rem 0.3rem 0.1rem;
+    padding: 0.2rem 0.4rem;
+    border: 1px solid silver;
+    background-color: lightcyan;
+    box-shadow: inset 1px 1px 3px rgba(192, 192, 192, 0.6);
+}
+
+#gameField {
+    display: none;
+}
+
+#btnStart {
+    margin: 1rem 0.5rem 0.5rem;
+    padding: 0.3rem 1rem;
+    background-color: yellow;
+    border: 1px solid silver;
+    box-shadow: 3px 3px 5px silver;
 }

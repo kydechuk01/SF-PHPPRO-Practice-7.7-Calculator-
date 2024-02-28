@@ -14,26 +14,46 @@
         <div class="col col-md-4 offset-md-4">
             <div class="card text-center">
                 <div class="card-header">
-                    <p class="m-0">Вопрос №<span id="orderNumberField">5</span></p>
+                    <h5><strong>Игра: Угадывание числа<br>методом бинарного поиска</strong></h5>                    
                 </div>
-                <div class="card-body">
-                    <div class="row no-gutters">
-                        <div class="col">
-                            <h3 class="card-title m-0"><span id="answerField">Вы загадали число 5?</span></h3>
+                <div class="card-header" id="settings">
+                    <h5>Загадайте любое число из диапазона:</h5>
+                    <label for="minValueInput">от</label>
+                    <input type="text" id="minValueInput" maxlength="5" size="6">
+                    <label for="maxValueInput">до</label>
+                    <input type="text" id="maxValueInput" maxlength="5" size="6">
+                    <div class="commentLabel"><strong>Внимание!</strong> Диапазон поиска будет ограничен от -999 до 999.<br>При вводе некорректного значения оно будет заменено на значение по умолчанию.</div>
+                    <input type="submit" value="А я угадаю это число!" id="btnStart">
+                </div>
+                <div id="gameField">
+                    <div class="card-header">
+                        <p class="m-0">Попытка №<span id="guessCountField">.</span></p>
+                    </div>
+                    <div class="card-body">
+                        <div class="row no-gutters">
+                            <div class="col">
+                                Угадываем число между <span id="rangeMinField">.</span> и <span id="rangeMaxField">.</span><br><br>
+                
+                                <h3 class="card-title m-0"><span id="answerField">Вы загадали число?</span></h3>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <div class="btn-group">
-                        <button class="btn btn-info" id="btnLess">&#129047;<br>меньше</button>
-                        <button class="btn btn-success btn-lg" id="btnEqual">Верно!</button>
-                        <button class="btn btn-info" id="btnOver">больше<br>&#129045;</button>
+                    <div class="card-body">
+                        <div class="btn-group">
+                            <button class="btn btn-info" id="btnLess">&larr;<br>меньше</button>
+                            <button class="btn btn-success btn-lg" id="btnEqual">Верно!</button>
+                            <button class="btn btn-info" id="btnMore">&rarr;<br>больше</button>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-link" id="btnRetry">Заново</button>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <button class="btn btn-link" id="btnRetry">Заново</button>
                 </div>
-            </div>
+            <br>
+            <p id="about">Разработано для курса PHP-Pro.<br>
+                Выполнил: Александр Климок (<a href="kydechuk">https://github.com/kydechuk01/</a>)<br>
+                Дата: 27.02.24</p>
         </div>
     </div>
 </div>
