@@ -1,5 +1,7 @@
 body {
-    background-color: darkslategray !important;
+    background-color: white !important;
+    margin: 1rem;
+    padding: 1rem;
 }
 
 .card-body {
