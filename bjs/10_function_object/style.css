@@ -1,0 +1,47 @@
+body {
+    margin: 1rem;
+    background-color: white;
+}
+
+footer {
+    margin-top: 2rem;
+}
+
+.card-body {
+    box-shadow: inset 0.2em 0.3rem 0.6rem rgba(185, 185, 185, 0.3);
+}
+
+#genderOutput {
+    color: blue;
+}
+
+h3 {
+    font-size: 1.8rem;
+    margin: 0rem;
+    padding: 0;
+}
+
+h4 {
+    font-size: 1.8rem;
+    margin: 0rem;
+    padding: 0;
+}
+
+#lastNameOutput {
+    font-weight: 700;
+}
+
+#btnRefresh, #btnReset {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+#professionOutput {
+    background-color: rgb(254, 244, 231);
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-style: italic;
+    color: brown;
+    margin: 0.7rem 0 0.7rem;
+    padding: 0.2rem;
+}

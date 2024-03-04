@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans" rel="stylesheet">
-    <link rel="stylesheet" href="style.css" type="text/css"/>
+    <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body>
 <div class="container">
@@ -19,20 +19,39 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            <h3 class="card-title"><span id="surnameOutput">Генерация фамилии</span></h3>
-                            <h4>Имя: <span id="firstNameOutput">Иван</span></h4>
-                            <p>
-                                <span id="genderOutput">Генерация пола</span>
-                                <span>, </span>
-                                <span id="birthYearOutput">Генерация года рождения</span>
-                            </p>
+                            <h3 class="card-title"><span id="lastNameOutput">Иванов</span></h3>
+                            <h4><span id="firstNameOutput">Иван</span> 
+                                <span id="patronymNameOutput">Иванович</span></h4>
+                            
+                                <div id="professionOutput">Профессия
+                                    </div>
+                                <span id="genderOutput">Гендер</span>, 
+                                <span id="ageCalc">Возраст</span> 
+                                <div>
+                                    Дата рождения: <span id="birthYearOutput"></span>
+                                </div>
+                           
                         </div>
                     </div>
+                </div>
+                <div class="card-footer">
+                    <input id="btnReset" type="button" value="❌Сбросить">
+                    <input id="btnRefresh" type="button" value="🔃 Обновить">
                 </div>
             </div>
         </div>
     </div>
 </div>
+<footer>
+    <nav>
+        <a href="../../index.html">К оглавлению...</a>
+    </nav>
+    <hr>
+    Страница проекта на github: <a href="https://github.com/kydechuk01/SF-PHPPRO-Practice-7.7-Calculator-">https://github.com/kydechuk01/SF-PHPPRO-Practice-7.7-Calculator-</a><br>
+    Выполнил: Александр Климок (<a href="https://github.com/kydechuk01/">kydechuk01</a>)<br>
+    Курс: PHPPRO_19<br>
+    Обновлено: 04.03.2024
+</footer>
 <script src="personGenerator.js"></script>
 <script src="init.js"></script>
 </body>
