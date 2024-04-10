@@ -1,4 +1,4 @@
-// git: https://kydechuk01.github.io/SF-PHPPRO-Practice-7.7-Calculator-/bjs/07_Number_and_string/index.html
+// git: https://kydechuk01.github.io/SF_Pract7-9_CalcGamePersonGenerator/bjs/07_Number_and_string/index.html
 
 ` посмотреть
  https://codequest.ru/articles/kalkulyator-na-chistom-javascript

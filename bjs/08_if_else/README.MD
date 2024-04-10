@@ -14,7 +14,7 @@
 
 #### Результаты:
 Ссылка на рабочую версию игры на pages:
-https://kydechuk01.github.io/SF-PHPPRO-Practice-7.7-Calculator-/bjs/08_if_else/index.html
+https://kydechuk01.github.io/SF_Pract7-9_CalcGamePersonGenerator/bjs/08_if_else/index.html
 ##### В работе использованы:
 - HTML-5, CSS, Markdown, Git via [github.com](https://github.com), Редактор VSCode
 
