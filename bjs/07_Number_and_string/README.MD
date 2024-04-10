@@ -14,7 +14,7 @@
 
 #### Результаты:
 Ссылка на рабочую версию калькулятора на pages:
-https://kydechuk01.github.io/SF-PHPPRO-Practice-7.7-Calculator-/bjs/07_Number_and_string/index.html
+https://kydechuk01.github.io/SF_Pract7-9_CalcGamePersonGenerator/bjs/07_Number_and_string/index.html
 ##### В работе использованы:
 - HTML-5
 - CSS
